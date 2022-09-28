@@ -20,6 +20,10 @@ loadMoreBtn.addEventListener('click', onLoadMoreBtn);
 onScroll();
 onToTopBtn();
 
+function simpleLightBoxRefresh () {
+   simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+}
+
 function onSearchForm(e) {
   e.preventDefault();
   window.scrollTo({ top: 0 });
@@ -28,7 +32,7 @@ function onSearchForm(e) {
   gallery.innerHTML = '';
   loadMoreBtn.classList.add('is-hidden');
 
-  if (query === '') {
+  if (!query) {
     Notify.failure(
       'The search string cannot be empty. Please specify your search query.'
     );
@@ -37,13 +41,13 @@ function onSearchForm(e) {
 
   fetchImages(query, page, perPage)
     .then(({ data }) => {
-      if (data.totalHits === 0) {
+      if (!data.totalHits) {
         Notify.failure(
           'Sorry, there are no images matching your search query. Please try again.'
         );
       } else {
         renderCard(data.hits);
-        simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+        simpleLightBoxRefresh();
         Notify.success(`Hooray! We found ${data.totalHits} images.`);
 
         if (data.totalHits > perPage) {
@@ -64,7 +68,7 @@ function onLoadMoreBtn() {
   fetchImages(query, page, perPage)
     .then(({ data }) => {
       renderCard(data.hits);
-      simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+      simpleLightBoxRefresh();
 
       const totalPages = Math.ceil(data.totalHits / perPage);
 
